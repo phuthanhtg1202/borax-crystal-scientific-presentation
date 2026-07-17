@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trồng tinh thể Borax — Scientific Presentation</title>
+  <meta name="description" content="Bài trình chiếu khoa học về trồng tinh thể borax, cơ chế kết tinh và ứng dụng trong đời sống." />
+  <style>
+    :root {
+      --bg: #03111f;
+      --bg-2: #061b2f;
+      --ink: #f4f8fb;
+      --muted: #a8bfd0;
+      --cyan: #47d7ff;
+      --cyan-2: #0aa6d8;
+      --amber: #ffbe5b;
+      --violet: #a78bfa;
+      --danger: #ff7b7b;
+      --line: rgba(120, 204, 240, .22);
+      --glass: rgba(12, 39, 61, .74);
+      --shadow: 0 32px 80px rgba(0, 0, 0, .46);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(71, 215, 255, .11), transparent 26%),
+        radial-gradient(circle at 84% 86%, rgba(167, 139, 250, .08), transparent 30%),
+        var(--bg);
+      font-family: Inter, Aptos, "Segoe UI", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+    a { color: var(--cyan); text-decoration-color: rgba(71, 215, 255, .45); }
+
+    .deck { position: relative; width: 100%; height: 100%; }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: clamp(30px, 4vw, 72px) clamp(34px, 5.7vw, 110px) clamp(28px, 3.4vw, 58px);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(42px) scale(.992);
+      transition: opacity .42s ease, transform .48s cubic-bezier(.2,.8,.2,1), visibility .42s;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .slide.active { opacity: 1; visibility: visible; transform: none; z-index: 2; }
+    .slide.exit-left { transform: translateX(-42px) scale(.992); }
+    .slide::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(circle at center, #000 0, transparent 72%);
+      z-index: -2;
+    }
+
+    .slide-head { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: var(--cyan);
+      font-size: clamp(13px, 1.1vw, 20px);
+      font-weight: 760;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 34px; height: 2px; background: currentColor; box-shadow: 0 0 18px currentColor; }
+    .chapter {
+      color: rgba(232, 245, 252, .52);
+      font-size: clamp(12px, 1vw, 18px);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding-top: 6px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { max-width: 980px; font-size: clamp(58px, 6.7vw, 124px); line-height: .94; letter-spacing: -.055em; }
+    h2 { max-width: 1260px; font-size: clamp(38px, 4.15vw, 76px); line-height: 1.03; letter-spacing: -.035em; }
+    h3 { font-size: clamp(20px, 1.65vw, 31px); line-height: 1.15; }
+    .lead { color: #d3e5ef; font-size: clamp(22px, 2vw, 38px); line-height: 1.38; }
+    .body-copy { color: #d6e5ed; font-size: clamp(17px, 1.35vw, 25px); line-height: 1.52; }
+    .muted { color: var(--muted); }
+    .accent { color: var(--cyan); }
+    .amber { color: var(--amber); }
+
+    .content { min-height: 0; display: flex; align-items: center; padding: 26px 0 18px; }
+    .grid-2 { width: 100%; display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: clamp(28px, 4.2vw, 82px); align-items: center; }
+    .grid-2.equal { grid-template-columns: 1fr 1fr; }
+    .stack { display: grid; gap: 24px; }
+
+    .hero-slide { padding: 0; grid-template-rows: 1fr; }
+    .hero-slide::after { display: none; }
+    .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; }
+    .hero-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(3,17,31,.98) 0%, rgba(3,17,31,.86) 37%, rgba(3,17,31,.22) 72%, rgba(3,17,31,.08) 100%); z-index: -2; }
+    .hero-content { align-self: center; max-width: 910px; padding: 7vh 5.7vw 8vh; }
+    .hero-sub { max-width: 770px; margin-top: 30px; color: #cfdee6; font-size: clamp(20px, 1.75vw, 34px); line-height: 1.45; }
+    .formula {
+      display: inline-block;
+      margin-top: 38px;
+      padding: 13px 20px;
+      border: 1px solid rgba(71,215,255,.34);
+      background: rgba(3,17,31,.5);
+      color: #dff8ff;
+      font-family: "Cambria Math", Georgia, serif;
+      font-size: clamp(20px, 1.55vw, 30px);
+      backdrop-filter: blur(8px);
+    }
+    .hero-foot { position: absolute; left: 5.7vw; bottom: 4.5vh; color: rgba(230,244,251,.62); font-size: clamp(13px, 1.05vw, 19px); }
+
+    .image-frame {
+      position: relative;
+      width: 100%;
+      min-height: 360px;
+      height: min(59vh, 660px);
+      overflow: hidden;
+      border: 1px solid rgba(113, 206, 242, .28);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      background: #061727;
+    }
+    .image-frame img { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .image-frame.contain img { object-fit: contain; background: #061727; }
+    .image-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 65%, rgba(3,17,31,.42));
+      pointer-events: none;
+      z-index: 1;
+    }
+    .image-caption {
+      position: absolute;
+      left: 20px; right: 20px; bottom: 16px;
+      z-index: 2;
+      color: rgba(235,248,255,.84);
+      font-size: clamp(12px, .95vw, 17px);
+      line-height: 1.35;
+    }
+
+    .callout {
+      position: relative;
+      padding: 22px 24px 22px 28px;
+      border-left: 3px solid var(--cyan);
+      background: linear-gradient(90deg, rgba(71,215,255,.11), rgba(71,215,255,.018));
+      color: #e6f4fa;
+      font-size: clamp(18px, 1.42vw, 27px);
+      line-height: 1.48;
+    }
+    .callout.amber-line { border-left-color: var(--amber); background: linear-gradient(90deg, rgba(255,190,91,.11), rgba(255,190,91,.018)); }
+    .callout strong { color: #fff; }
+
+    .clean-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+    .clean-list li {
+      position: relative;
+      padding-left: 30px;
+      color: #d9e8ef;
+      font-size: clamp(17px, 1.3vw, 24px);
+      line-height: 1.45;
+    }
+    .clean-list li::before { content: ""; position: absolute; left: 0; top: .62em; width: 10px; height: 10px; background: var(--cyan); transform: rotate(45deg); box-shadow: 0 0 15px rgba(71,215,255,.55); }
+
+    .number-list { counter-reset: steps; list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; }
+    .number-list li {
+      counter-increment: steps;
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 16px;
+      align-items: start;
+      color: #dceaf1;
+      font-size: clamp(17px, 1.27vw, 24px);
+      line-height: 1.46;
+    }
+    .number-list li::before {
+      content: counter(steps, decimal-leading-zero);
+      color: var(--cyan);
+      font: 750 clamp(17px, 1.2vw, 22px)/1.5 Inter, sans-serif;
+      border-top: 1px solid rgba(71,215,255,.48);
+      padding-top: 4px;
+    }
+
+    .metric-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .metric { border-top: 1px solid rgba(71,215,255,.4); padding-top: 14px; }
+    .metric b { display: block; color: var(--cyan); font-size: clamp(27px, 2.5vw, 47px); line-height: 1; margin-bottom: 9px; }
+    .metric span { color: var(--muted); font-size: clamp(13px, 1vw, 18px); line-height: 1.35; }
+
+    .safety-grid { width: 100%; display: grid; grid-template-columns: 1.06fr .94fr; gap: 56px; align-items: center; }
+    .safety-strip { display: grid; gap: 16px; }
+    .safety-item { display: grid; grid-template-columns: 54px 1fr; gap: 18px; align-items: center; padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .safety-icon { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(255,123,123,.55); color: var(--danger); font-weight: 800; font-size: 21px; transform: rotate(45deg); }
+    .safety-icon span { transform: rotate(-45deg); }
+    .safety-item p { color: #dbe8ee; font-size: clamp(16px, 1.25vw, 23px); line-height: 1.38; }
+
+    .process-map { width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .process-node { position: relative; min-height: 210px; padding: 28px 22px 22px; border-top: 2px solid var(--cyan); background: linear-gradient(180deg, rgba(71,215,255,.09), rgba(71,215,255,.02)); }
+    .process-node:not(:last-child)::after { content: "→"; position: absolute; right: -22px; top: 42%; color: var(--amber); font-size: 32px; z-index: 2; }
+    .process-node .n { color: var(--cyan); font-size: 17px; font-weight: 800; letter-spacing: .1em; }
+    .process-node h3 { margin: 30px 0 12px; }
+    .process-node p { color: var(--muted); font-size: clamp(14px, 1.1vw, 20px); line-height: 1.42; }
+
+    .state-pair { width: 100%; display: grid; grid-template-columns: 1fr 120px 1fr; gap: 24px; align-items: stretch; }
+    .state { padding: 34px; background: var(--glass); border-top: 2px solid var(--cyan); }
+    .state.cold { border-top-color: var(--amber); }
+    .state .temp { color: var(--cyan); font-size: clamp(46px, 4vw, 74px); font-weight: 800; letter-spacing: -.04em; }
+    .state.cold .temp { color: var(--amber); }
+    .state h3 { margin: 12px 0 18px; }
+    .state p { color: #d8e6ed; font-size: clamp(17px, 1.35vw, 25px); line-height: 1.47; }
+    .state-arrow { display: grid; place-items: center; color: var(--amber); font-size: 54px; }
+
+    .mechanism-wrap { position: relative; width: 100%; }
+    .mechanism-image { height: min(56vh, 610px); }
+    .mechanism-labels { position: absolute; left: 2.5%; right: 2.5%; bottom: 4.5%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; z-index: 3; }
+    .mechanism-label { padding: 15px 18px; background: rgba(3,17,31,.82); border-top: 2px solid var(--cyan); backdrop-filter: blur(10px); }
+    .mechanism-label:nth-child(2) { border-top-color: var(--violet); }
+    .mechanism-label:nth-child(3) { border-top-color: var(--amber); }
+    .mechanism-label b { display: block; font-size: clamp(17px, 1.35vw, 24px); margin-bottom: 4px; }
+    .mechanism-label span { color: var(--muted); font-size: clamp(12px, .95vw, 17px); line-height: 1.35; }
+
+    .compare { width: 100%; border-collapse: collapse; font-size: clamp(15px, 1.15vw, 22px); }
+    .compare th { color: var(--cyan); text-align: left; font-size: .82em; letter-spacing: .08em; text-transform: uppercase; padding: 0 18px 14px; border-bottom: 1px solid rgba(71,215,255,.42); }
+    .compare td { padding: 18px; color: #dceaf1; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.4; }
+    .compare tr:last-child td { border-bottom: 0; }
+    .tag { display: inline-block; padding: 4px 9px; border: 1px solid rgba(71,215,255,.35); color: #c9f5ff; font-size: .78em; }
+
+    .application-image { height: min(54vh, 590px); }
+    .application-overlay { position: absolute; inset: auto 0 0; display: grid; grid-template-columns: repeat(4, 1fr); z-index: 2; background: linear-gradient(180deg, transparent, rgba(3,17,31,.95) 30%); padding: 90px 28px 25px; gap: 18px; }
+    .app-label b { display: block; color: #fff; font-size: clamp(16px, 1.22vw, 23px); }
+    .app-label span { color: var(--muted); font-size: clamp(12px, .9vw, 16px); line-height: 1.35; }
+
+    .summary-grid { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; }
+    .summary-item { padding-top: 20px; border-top: 2px solid var(--cyan); }
+    .summary-item:nth-child(2) { border-color: var(--violet); }
+    .summary-item:nth-child(3) { border-color: var(--amber); }
+    .summary-item .big { color: rgba(255,255,255,.18); font-size: clamp(54px, 5vw, 92px); font-weight: 850; line-height: .8; }
+    .summary-item h3 { margin: 22px 0 12px; }
+    .summary-item p { color: var(--muted); font-size: clamp(16px, 1.2vw, 22px); line-height: 1.45; }
+
+    .sources { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 20px 48px; }
+    .source { padding: 14px 0 16px; border-bottom: 1px solid var(--line); }
+    .source b { display: block; color: #fff; font-size: clamp(15px, 1.1vw, 20px); margin-bottom: 5px; }
+    .source a { font-size: clamp(12px, .88vw, 16px); overflow-wrap: anywhere; }
+
+    .slide-foot { display: flex; justify-content: space-between; align-items: end; color: rgba(223,240,249,.48); font-size: clamp(12px, .85vw, 16px); letter-spacing: .04em; }
+    .slide-num { color: rgba(223,240,249,.68); }
+    .source-note { max-width: 74%; line-height: 1.35; }
+
+    .controls {
+      position: fixed;
+      right: 24px; bottom: 20px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      opacity: .3;
+      transition: opacity .2s ease;
+    }
+    .controls:hover, .controls:focus-within { opacity: 1; }
+    .controls button {
+      width: 38px; height: 38px;
+      border: 1px solid rgba(120,204,240,.28);
+      color: #eaf8ff;
+      background: rgba(3,17,31,.76);
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    .controls button:hover { border-color: var(--cyan); color: var(--cyan); }
+    .progress { position: fixed; z-index: 40; left: 0; bottom: 0; width: 100%; height: 4px; background: rgba(255,255,255,.06); }
+    .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--violet), var(--amber)); transition: width .36s ease; box-shadow: 0 0 18px rgba(71,215,255,.5); }
+    .hint { position: fixed; z-index: 29; left: 24px; bottom: 18px; color: rgba(222,239,248,.34); font-size: 12px; letter-spacing: .06em; }
+
+    .overview .slide { visibility: visible; opacity: 1; transform: scale(.22); transform-origin: top left; width: 400%; height: 400%; pointer-events: none; }
+
+    @media (max-aspect-ratio: 4/3) {
+      .grid-2, .grid-2.equal, .safety-grid { grid-template-columns: 1fr; gap: 22px; }
+      .image-frame { height: 38vh; min-height: 240px; }
+      .application-image { height: 46vh; }
+      .content { align-items: start; }
+      .slide { overflow: auto; }
+      .metric-row { grid-template-columns: repeat(3, 1fr); }
+      .process-map { grid-template-columns: repeat(2, 1fr); }
+      .process-node:not(:last-child)::after { display: none; }
+    }
+
+    @media print {
+      html, body { overflow: visible; background: #03111f; }
+      .deck { height: auto; }
+      .slide { position: relative; width: 13.333in; height: 7.5in; visibility: visible; opacity: 1; transform: none; page-break-after: always; }
+      .controls, .progress, .hint { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck" aria-label="Bài trình chiếu khoa học về tinh thể borax">
+
+    <section class="slide hero-slide active" data-title="Mở đầu">
+      <img class="hero-bg" src="borax-crystal-assets/01-hero.png" alt="Tinh thể borax phát triển trên giá thể hình ngôi sao trong lọ thủy tinh" />
+      <div class="hero-shade"></div>
+      <div class="hero-content">
+        <div class="eyebrow">Scientific presentation</div>
+        <h1>Trồng tinh thể<br><span class="accent">Borax</span></h1>
+        <p class="hero-sub">Từ dung dịch trong suốt đến mạng tinh thể có trật tự — một thí nghiệm nhỏ để nhìn thấy <strong>kết tinh</strong> đang diễn ra.</p>
+        <div class="formula">Na₂B₄O₇·10H₂O — sodium tetraborate decahydrate</div>
+      </div>
+      <div class="hero-foot">Dùng phím ← → để trình chiếu · F để toàn màn hình</div>
+    </section>
+
+    <section class="slide" data-title="Câu hỏi khoa học">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">01 · Câu hỏi</div>
+          <h2>Một tinh thể “mọc” lên từ nước như thế nào?</h2>
+        </div>
+        <div class="chapter">Quan sát → Giải thích</div>
+      </header>
+      <div class="content">
+        <div class="grid-2 equal">
+          <div class="stack">
+            <p class="lead">Ta sẽ tạo một dung dịch nóng chứa nhiều borax, rồi buộc hệ phải rời khỏi trạng thái cân bằng bằng cách <span class="accent">làm nguội</span>.</p>
+            <div class="callout"><strong>Giả thuyết:</strong> khi nhiệt độ giảm, độ tan giảm; phần borax “dư” sẽ sắp xếp thành mạng tinh thể trên bề mặt sợi.</div>
+          </div>
+          <div class="process-map" style="grid-template-columns: repeat(2, 1fr)">
+            <div class="process-node"><span class="n">A</span><h3>Dung dịch nóng</h3><p>Nhiều chất tan được phân tán trong nước.</p></div>
+            <div class="process-node"><span class="n">B</span><h3>Làm nguội</h3><p>Dung dịch tiến vào trạng thái quá bão hòa.</p></div>
+            <div class="process-node"><span class="n">C</span><h3>Tạo mầm</h3><p>Cụm có trật tự hình thành tại bề mặt thuận lợi.</p></div>
+            <div class="process-node"><span class="n">D</span><h3>Phát triển</h3><p>Các đơn vị tiếp tục gắn vào bề mặt tinh thể.</p></div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span>Kết tinh từ dung dịch</span><span class="slide-num">02 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="An toàn và vật liệu">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">02 · Chuẩn bị</div>
+          <h2>An toàn trước, tinh thể sau</h2>
+        </div>
+        <div class="chapter">Có người lớn / giáo viên giám sát</div>
+      </header>
+      <div class="content">
+        <div class="safety-grid">
+          <div class="image-frame"><img src="borax-crystal-assets/02-materials.png" alt="Bộ dụng cụ trồng tinh thể borax gồm lọ, nước, borax, thìa, dây, kẽm nhung, kính và găng tay" /><div class="image-caption">Dụng cụ riêng cho thí nghiệm; không dùng lại để chứa thực phẩm.</div></div>
+          <div class="safety-strip">
+            <div class="safety-item"><div class="safety-icon"><span>!</span></div><p><strong>Kính bảo hộ + găng tay.</strong> Tránh bụi borax vào mắt, da và đường hô hấp.</p></div>
+            <div class="safety-item"><div class="safety-icon"><span>°</span></div><p><strong>Nước rất nóng.</strong> Người lớn rót nước; đặt lọ trên tấm cách nhiệt, tránh mép bàn.</p></div>
+            <div class="safety-item"><div class="safety-icon"><span>×</span></div><p><strong>Không nếm hoặc ăn.</strong> Không nhầm tinh thể với đường hay muối.</p></div>
+            <div class="safety-item"><div class="safety-icon"><span>↺</span></div><p><strong>Rửa tay và vệ sinh.</strong> Thu gom phần dư theo hướng dẫn của giáo viên/địa phương.</p></div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span class="source-note">Nguồn an toàn: American Chemical Society; PubChem LCSS</span><span class="slide-num">03 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Vật liệu và định lượng">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">03 · Công thức thí nghiệm</div>
+          <h2>Một mẻ nhỏ, dễ quan sát</h2>
+        </div>
+        <div class="chapter">Cho 1 lọ 400–500 mL</div>
+      </header>
+      <div class="content">
+        <div class="grid-2 equal">
+          <div class="stack">
+            <div class="metric-row">
+              <div class="metric"><b>250 mL</b><span>nước rất nóng, vừa ngừng sôi</span></div>
+              <div class="metric"><b>≈ 3 thìa</b><span>borax; thêm dần đến bão hòa</span></div>
+              <div class="metric"><b>8–24 h</b><span>để yên, nguội chậm</span></div>
+            </div>
+            <div class="callout amber-line"><strong>Điểm kết thúc khi pha:</strong> dung dịch gần trong nhưng một ít borax không tan thêm sau khi khuấy kỹ.</div>
+          </div>
+          <ul class="clean-list">
+            <li>1 lọ thủy tinh chịu nhiệt, sạch</li>
+            <li>1 thìa đong, que khuấy và ca chịu nhiệt</li>
+            <li>Kẽm nhung (pipe cleaner), dây cotton, bút chì/que gỗ</li>
+            <li>Giấy che lỏng để hạn chế bụi — không đậy kín khi còn nóng</li>
+            <li>Khăn giấy, nhãn thời gian, điện thoại để chụp định kỳ</li>
+          </ul>
+        </div>
+      </div>
+      <footer class="slide-foot"><span class="source-note">Tỉ lệ tham khảo: ACS và Science Buddies — khoảng 3 thìa borax cho 1 cup nước, thêm từng thìa.</span><span class="slide-num">04 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Bước 1 — giá thể">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">04 · Bước 1</div>
+          <h2>Tạo một “giàn giáo” cho tinh thể</h2>
+        </div>
+        <div class="chapter">Giá thể tạo nhiều điểm tạo mầm</div>
+      </header>
+      <div class="content">
+        <div class="grid-2">
+          <div class="stack">
+            <ol class="number-list">
+              <li>Uốn kẽm nhung thành ngôi sao hoặc hình đơn giản, nhỏ hơn miệng lọ.</li>
+              <li>Buộc dây cotton chắc vào hình; đầu kia buộc giữa bút chì hoặc que gỗ.</li>
+              <li>Ướm thử: toàn bộ hình phải treo tự do, cách đáy và thành lọ ít nhất khoảng 1 cm.</li>
+              <li>Lấy giá thể ra trước khi rót dung dịch nóng.</li>
+            </ol>
+            <div class="callout"><strong>Vì sao dùng kẽm nhung?</strong> Bề mặt xù xì có nhiều khe và điểm tiếp xúc, giúp mầm tinh thể hình thành dễ hơn.</div>
+          </div>
+          <div class="image-frame"><img src="borax-crystal-assets/04-suspend.png" alt="Giá thể hình sao treo tự do từ một bút chì trên miệng lọ" /><div class="image-caption">Kiểm tra khoảng hở trước khi cho dung dịch vào.</div></div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span>Ảnh minh họa tạo bởi AI · thiết lập vật lý cần được kiểm tra thực tế</span><span class="slide-num">05 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Bước 2 — pha dung dịch">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">05 · Bước 2</div>
+          <h2>Pha dung dịch nóng gần bão hòa</h2>
+        </div>
+        <div class="chapter">Thêm từng thìa — không đổ ồ ạt</div>
+      </header>
+      <div class="content">
+        <div class="grid-2">
+          <div class="stack">
+            <ol class="number-list">
+              <li>Đun nước; tắt nguồn nhiệt và chờ nước ngừng sôi mạnh.</li>
+              <li>Đeo kính, găng; người lớn rót 250 mL nước nóng vào ca chịu nhiệt.</li>
+              <li>Thêm 1 thìa borax, khuấy cho tan; lặp lại từng thìa.</li>
+              <li>Dừng khi một lượng nhỏ vẫn còn sau 30–60 giây khuấy — dấu hiệu gần bão hòa.</li>
+              <li>Để cặn lắng ngắn; dùng phần dung dịch trong phía trên.</li>
+            </ol>
+            <div class="callout amber-line">Không đun borax trực tiếp trên bếp và không để bụi bột bay lên.</div>
+          </div>
+          <div class="image-frame"><img src="borax-crystal-assets/03-dissolve.png" alt="Thêm borax từng thìa vào nước nóng và khuấy bằng que thủy tinh" /><div class="image-caption">Nước nóng hòa tan được nhiều borax hơn nước lạnh.</div></div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span class="source-note">Quy trình tham khảo: ACS “Borax Crystal Snowflakes”; Science Buddies “How to Grow the Best Crystals”.</span><span class="slide-num">06 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Bước 3 — treo và làm nguội">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">06 · Bước 3</div>
+          <h2>Treo giá thể, rồi… đừng chạm vào lọ</h2>
+        </div>
+        <div class="chapter">Giữ hệ ổn định</div>
+      </header>
+      <div class="content">
+        <div class="grid-2">
+          <div class="stack">
+            <ol class="number-list">
+              <li>Rót nhẹ phần dung dịch trong vào lọ, khoảng ¾ chiều cao.</li>
+              <li>Hạ giá thể xuống, ngập hoàn toàn nhưng không chạm lọ.</li>
+              <li>Che lỏng bằng giấy để hạn chế bụi; không vặn nắp kín khi nóng.</li>
+              <li>Đặt nơi không rung, tránh quạt và ánh nắng trực tiếp.</li>
+              <li>Ghi giờ bắt đầu; quan sát mà không di chuyển lọ trong 8–24 giờ.</li>
+            </ol>
+            <div class="callout"><strong>Kiểm soát rung động:</strong> va chạm có thể kích hoạt nhiều mầm mới, làm tinh thể nhỏ và mọc cả trên thành lọ.</div>
+          </div>
+          <div class="image-frame"><img src="borax-crystal-assets/05-start.png" alt="Giá thể hình ngôi sao được treo trong dung dịch borax nóng trong suốt" /><div class="image-caption">Thời điểm t = 0: dung dịch còn trong, chưa thấy tinh thể.</div></div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span>Điều kiện quan trọng: sạch · yên · nguội chậm</span><span class="slide-num">07 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Bước 4 — thu tinh thể">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">07 · Bước 4</div>
+          <h2>Thu mẫu đúng lúc</h2>
+        </div>
+        <div class="chapter">Sau 8–24 giờ</div>
+      </header>
+      <div class="content">
+        <div class="grid-2 equal">
+          <div class="stack">
+            <h3>Khi nào lấy ra?</h3>
+            <ul class="clean-list">
+              <li>Bề mặt đã phủ đủ, các mặt tinh thể còn tách biệt.</li>
+              <li>Dung dịch đã về nhiệt độ phòng.</li>
+              <li>Không chờ quá lâu nếu tinh thể bắt đầu nối vào thành hoặc đáy lọ.</li>
+            </ul>
+          </div>
+          <div class="stack">
+            <h3>Cách lấy và bảo quản</h3>
+            <ol class="number-list">
+              <li>Nhấc bằng que đỡ; không chạm tay vào tinh thể ướt.</li>
+              <li>Để ráo trên khăn giấy 1–2 giờ, tránh rửa bằng nước.</li>
+              <li>Chụp ảnh cạnh thước; ghi thời gian, nhiệt độ và nhận xét.</li>
+              <li>Giữ khô trong hộp kín. Độ ẩm có thể làm bề mặt thay đổi.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span>Không dùng tinh thể như đồ ăn hoặc vật tiếp xúc thực phẩm</span><span class="slide-num">08 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Quá trình phát triển">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">08 · Quan sát theo thời gian</div>
+          <h2>Tinh thể phủ dần theo thời gian</h2>
+        </div>
+        <div class="chapter">Thời gian mang tính điển hình</div>
+      </header>
+      <div class="content">
+        <div class="stack" style="width:100%">
+          <div class="image-frame contain" style="height:min(48vh,520px)"><img src="borax-crystal-assets/06-growth.png" alt="Bốn giai đoạn tinh thể borax phát triển dần trên giá thể hình sao" /><div class="image-caption">Ảnh khái niệm: tốc độ thật phụ thuộc nồng độ, tốc độ nguội, độ sạch và rung động.</div></div>
+          <div class="process-map">
+            <div class="process-node"><span class="n">0–1 h</span><h3>Chưa thấy gì</h3><p>Hệ đang nguội; mức quá bão hòa tăng dần.</p></div>
+            <div class="process-node"><span class="n">1–3 h</span><h3>Tạo mầm</h3><p>Chấm sáng li ti xuất hiện trên sợi và khuyết tật bề mặt.</p></div>
+            <div class="process-node"><span class="n">3–8 h</span><h3>Lớn theo mặt</h3><p>Vật chất từ dung dịch gắn vào các bậc của mạng tinh thể.</p></div>
+            <div class="process-node"><span class="n">8–24 h</span><h3>Cạnh tranh</h3><p>Tinh thể lớn dần; các cụm gần nhau có thể chạm và hợp khối.</p></div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span>Chụp ảnh cùng góc mỗi 30–60 phút để tạo timelapse</span><span class="slide-num">09 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Vì sao tinh thể mọc">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">09 · Động lực nhiệt động học</div>
+          <h2>Làm nguội biến “đã đầy” thành “quá đầy”</h2>
+        </div>
+        <div class="chapter">Độ tan → Quá bão hòa</div>
+      </header>
+      <div class="content">
+        <div class="state-pair">
+          <div class="state">
+            <div class="temp">Nóng</div>
+            <h3>Dung dịch bão hòa</h3>
+            <p>Nước nóng có thể giữ nhiều borax ở trạng thái hòa tan hơn. Tại nhiệt độ này, tốc độ hòa tan và kết tinh gần cân bằng.</p>
+          </div>
+          <div class="state-arrow">→</div>
+          <div class="state cold">
+            <div class="temp">Lạnh dần</div>
+            <h3>Dung dịch quá bão hòa</h3>
+            <p>Nồng độ thực tế cao hơn mức cân bằng ở nhiệt độ mới. Hệ có “động lực” hạ năng lượng tự do bằng cách tạo pha rắn có trật tự.</p>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span class="source-note">IUPAC: dung dịch quá bão hòa chứa nồng độ chất tan cao hơn trạng thái cân bằng.</span><span class="slide-num">10 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Cơ chế vi mô">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">10 · Cơ chế vi mô</div>
+          <h2>Trật tự xuất hiện từng lớp một</h2>
+        </div>
+        <div class="chapter">Minh họa khái niệm · không theo tỉ lệ</div>
+      </header>
+      <div class="content">
+        <div class="mechanism-wrap">
+          <div class="image-frame mechanism-image"><img src="borax-crystal-assets/07-mechanism.png" alt="Minh họa các tiểu phần hòa tan tạo mầm và gắn vào mạng tinh thể trên bề mặt sợi" /></div>
+          <div class="mechanism-labels">
+            <div class="mechanism-label"><b>1 · Khuếch tán</b><span>Các ion/nhóm ion ngậm nước chuyển động trong dung dịch.</span></div>
+            <div class="mechanism-label"><b>2 · Tạo mầm</b><span>Một cụm đủ bền hình thành tại bề mặt có lợi.</span></div>
+            <div class="mechanism-label"><b>3 · Tăng trưởng</b><span>Các đơn vị gắn đúng vị trí, tạo bậc và mặt tinh thể.</span></div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span class="source-note">Trong nước, borax tồn tại dưới các dạng ion borat phụ thuộc điều kiện; hình minh họa chỉ diễn tả nguyên lý sắp xếp.</span><span class="slide-num">11 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Điều khiển kích thước">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">11 · Động học kết tinh</div>
+          <h2>Muốn tinh thể lớn: tạo ít mầm, nuôi lâu</h2>
+        </div>
+        <div class="chapter">Nucleation ↔ Growth</div>
+      </header>
+      <div class="content">
+        <div class="grid-2 equal">
+          <table class="compare" aria-label="So sánh làm nguội nhanh và chậm">
+            <thead><tr><th>Điều kiện</th><th>Số mầm</th><th>Kết quả thường thấy</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag">Nguội nhanh</span></td><td>Nhiều</td><td>Nhiều tinh thể nhỏ; dễ giữ tạp chất.</td></tr>
+              <tr><td><span class="tag">Nguội chậm</span></td><td>Ít hơn</td><td>Ít tinh thể hơn nhưng lớn và rõ mặt hơn.</td></tr>
+              <tr><td><span class="tag">Bị rung</span></td><td>Tăng đột ngột</td><td>Mọc lộn xộn trên thành, đáy và giá thể.</td></tr>
+              <tr><td><span class="tag">Có mầm giống</span></td><td>Được định hướng</td><td>Vật chất ưu tiên nuôi tinh thể sẵn có.</td></tr>
+            </tbody>
+          </table>
+          <div class="stack">
+            <div class="callout"><strong>Hai quá trình cạnh tranh:</strong> tạo mầm mới tiêu thụ chất tan để tăng số lượng; tăng trưởng nuôi các mầm đã có để tăng kích thước.</div>
+            <ul class="clean-list">
+              <li>Nồng độ cao hơn → động lực kết tinh lớn hơn.</li>
+              <li>Nhiệt độ giảm nhanh → vùng quá bão hòa đạt nhanh.</li>
+              <li>Tạp chất có thể chặn bậc tăng trưởng hoặc mắc kẹt trong mạng.</li>
+              <li>Diện tích bề mặt giá thể quyết định số vị trí thuận lợi.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span class="source-note">Science Buddies: làm nguội nhanh thường cho nhiều tinh thể nhỏ; nguội chậm cho tinh thể lớn, sạch hơn.</span><span class="slide-num">12 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Hiện tượng chung">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">12 · Hiện tượng khoa học chung</div>
+          <h2>Đây là một chuyển pha: dung dịch → chất rắn tinh thể</h2>
+        </div>
+        <div class="chapter">Crystallization</div>
+      </header>
+      <div class="content">
+        <div class="grid-2 equal">
+          <div class="stack">
+            <p class="lead"><strong>Kết tinh</strong> là quá trình hình thành pha rắn có trật tự từ dung dịch, chất nóng chảy hoặc hơi.</p>
+            <div class="callout">Cùng một logic xuất hiện khi <strong>nước đóng băng</strong>, <strong>muối kết tinh khi nước biển bay hơi</strong>, <strong>magma nguội tạo khoáng vật</strong>, hay <strong>đường kết tinh trong kẹo</strong>.</div>
+          </div>
+          <div class="process-map" style="grid-template-columns:1fr 1fr">
+            <div class="process-node"><span class="n">Nguồn 1</span><h3>Làm nguội</h3><p>Giảm độ tan hoặc làm chất nóng chảy đi qua điểm chuyển pha.</p></div>
+            <div class="process-node"><span class="n">Nguồn 2</span><h3>Bay hơi</h3><p>Giảm lượng dung môi, làm nồng độ tăng đến quá bão hòa.</p></div>
+            <div class="process-node"><span class="n">Nguồn 3</span><h3>Phản ứng</h3><p>Tạo sản phẩm ít tan và kết tủa/kết tinh khỏi dung dịch.</p></div>
+            <div class="process-node"><span class="n">Nguồn 4</span><h3>Giảm áp</h3><p>Thay đổi cân bằng pha trong một số hệ công nghiệp và địa chất.</p></div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span>Điểm chung: hệ rời cân bằng, tạo mầm, rồi phát triển cấu trúc có trật tự</span><span class="slide-num">13 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Tầm quan trọng">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">13 · Trong cuộc sống</div>
+          <h2>Kiểm soát tinh thể là kiểm soát vật liệu</h2>
+        </div>
+        <div class="chapter">Từ gian bếp đến vi mạch</div>
+      </header>
+      <div class="content">
+        <div class="image-frame application-image">
+          <img src="borax-crystal-assets/08-applications.png" alt="Muối, đường, dược phẩm, wafer bán dẫn, bông tuyết và khoáng vật minh họa các ứng dụng của kết tinh" />
+          <div class="application-overlay">
+            <div class="app-label"><b>Thực phẩm</b><span>Kích thước tinh thể chi phối độ mịn của muối, đường, chocolate và kem.</span></div>
+            <div class="app-label"><b>Dược phẩm</b><span>Dạng tinh thể ảnh hưởng độ tinh khiết, độ tan và khả năng gia công thuốc.</span></div>
+            <div class="app-label"><b>Điện tử</b><span>Tinh thể bán dẫn chất lượng cao là nền tảng của chip, LED và cảm biến.</span></div>
+            <div class="app-label"><b>Tự nhiên</b><span>Bông tuyết, khoáng vật và đá ghi lại lịch sử nhiệt độ, áp suất, thành phần.</span></div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span class="source-note">FDA: kết tinh là bước quan trọng để tinh sạch và cô lập dược chất; NIST: tăng trưởng tinh thể là nền tảng vật liệu bán dẫn.</span><span class="slide-num">14 / 15</span></footer>
+    </section>
+
+    <section class="slide" data-title="Kết luận và nguồn">
+      <header class="slide-head">
+        <div>
+          <div class="eyebrow">14 · Kết luận</div>
+          <h2>Ba ý mang về</h2>
+        </div>
+        <div class="chapter">Quan sát · Mô hình · Ứng dụng</div>
+      </header>
+      <div class="content" style="align-items:start; padding-top:40px">
+        <div class="stack" style="width:100%; gap:34px">
+          <div class="summary-grid">
+            <div class="summary-item"><div class="big">01</div><h3>Quá bão hòa tạo động lực</h3><p>Làm nguội khiến lượng chất tan vượt mức cân bằng, mở đường cho pha tinh thể hình thành.</p></div>
+            <div class="summary-item"><div class="big">02</div><h3>Bề mặt khởi đầu trật tự</h3><p>Giá thể cung cấp điểm tạo mầm; các đơn vị hòa tan gắn đúng vị trí để tinh thể lớn lên.</p></div>
+            <div class="summary-item"><div class="big">03</div><h3>Tốc độ quyết định cấu trúc</h3><p>Nguội chậm thường ưu tiên tinh thể lớn; nguội nhanh thường tạo nhiều tinh thể nhỏ.</p></div>
+          </div>
+          <div class="sources">
+            <div class="source"><b>American Chemical Society — Borax Crystal Snowflakes</b><a href="https://www.acs.org/content/dam/acsorg/education/outreach/celebrating-chemistry/2017-ncw-celebrating-chemistry-english.pdf" target="_blank" rel="noreferrer">acs.org · hướng dẫn và an toàn</a></div>
+            <div class="source"><b>PubChem — Sodium tetraborate decahydrate</b><a href="https://pubchem.ncbi.nlm.nih.gov/compound/Sodium-tetraborate-decahydrate" target="_blank" rel="noreferrer">pubchem.ncbi.nlm.nih.gov · công thức và dữ liệu an toàn</a></div>
+            <div class="source"><b>IUPAC Gold Book — Supersaturation</b><a href="https://goldbook.iupac.org/terms/view/S06146" target="_blank" rel="noreferrer">goldbook.iupac.org · định nghĩa quá bão hòa</a></div>
+            <div class="source"><b>Science Buddies — How to Grow the Best Crystals</b><a href="https://www.sciencebuddies.org/stem-activities/how-to-grow-crystals" target="_blank" rel="noreferrer">sciencebuddies.org · quy trình và ảnh hưởng nhiệt độ</a></div>
+            <div class="source"><b>FDA — Continuous Crystallization</b><a href="https://www.fda.gov/science-research/fda-science-forum/continuous-crystallization-carbamazepine-set-and-monitoring-using-process-analytical-technology" target="_blank" rel="noreferrer">fda.gov · vai trò trong sản xuất dược phẩm</a></div>
+            <div class="source"><b>NIST — Semiconductor crystal growth</b><a href="https://www.nist.gov/blogs/taking-measure/my-first-semiconductor-standards-were-bust-or-were-they" target="_blank" rel="noreferrer">nist.gov · tinh thể bán dẫn trong điện tử</a></div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot"><span>Hình minh họa trong bộ slide được tạo bằng OpenAI ImageGen</span><span class="slide-num">15 / 15</span></footer>
+    </section>
+
+  </main>
+
+  <div class="hint" aria-hidden="true">← → chuyển slide · F toàn màn hình · Home/End</div>
+  <nav class="controls" aria-label="Điều khiển trình chiếu">
+    <button id="prev" type="button" aria-label="Slide trước">←</button>
+    <button id="full" type="button" aria-label="Toàn màn hình">⛶</button>
+    <button id="next" type="button" aria-label="Slide sau">→</button>
+  </nav>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const bar = document.getElementById('progressBar');
+      let current = Math.max(0, Math.min(slides.length - 1, Number(location.hash.replace('#', '')) - 1 || 0));
+
+      function show(index, push = true) {
+        index = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((s, i) => {
+          s.classList.toggle('active', i === index);
+          s.classList.toggle('exit-left', i < index);
+          s.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+        });
+        current = index;
+        bar.style.width = `${((current + 1) / slides.length) * 100}%`;
+        document.title = `${current + 1}/${slides.length} · ${slides[current].dataset.title} — Tinh thể Borax`;
+        if (push) history.replaceState(null, '', `#${current + 1}`);
+      }
+
+      function fullscreen() {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      }
+
+      document.getElementById('prev').addEventListener('click', () => show(current - 1));
+      document.getElementById('next').addEventListener('click', () => show(current + 1));
+      document.getElementById('full').addEventListener('click', fullscreen);
+      document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (['arrowright', 'pagedown', ' ', 'enter'].includes(key)) { e.preventDefault(); show(current + 1); }
+        else if (['arrowleft', 'pageup', 'backspace'].includes(key)) { e.preventDefault(); show(current - 1); }
+        else if (key === 'home') { e.preventDefault(); show(0); }
+        else if (key === 'end') { e.preventDefault(); show(slides.length - 1); }
+        else if (key === 'f') fullscreen();
+      });
+      let touchX = null;
+      document.addEventListener('touchstart', e => touchX = e.changedTouches[0].clientX, {passive:true});
+      document.addEventListener('touchend', e => {
+        if (touchX == null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (Math.abs(dx) > 60) show(current + (dx < 0 ? 1 : -1));
+        touchX = null;
+      }, {passive:true});
+      window.addEventListener('hashchange', () => show((Number(location.hash.slice(1)) || 1) - 1, false));
+      show(current, false);
+    })();
+  </script>
+</body>
+</html>
